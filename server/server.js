@@ -13,6 +13,10 @@ const port = process.env.PORT || 3001;
 const googleApiKey = process.env.GOOGLE_API_KEY || "GOOGLE-API-KEY";
 const googleCX = process.env.GOOGLE_CX || "GOOGLE-CX";
 
+app.get("/", async (req, res) => {
+	return res.json({ response: "server is running" });
+});
+
 app.post("/search-images", async (req, res) => {
 	const searchTerm = req.body.searchTerm;
 	console.log(`Searching for ${searchTerm}`);

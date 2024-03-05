@@ -1,9 +1,21 @@
+import { useAuth0 } from "@auth0/auth0-react";
+import LoginButton from "./components/LoginButton";
 import Search from "./components/Search";
+import Profile from "./components/profile";
+import LogoutButton from "./components/LogoutButton";
 
 function App() {
-	return (
+	const { user, isAuthenticated, isLoading } = useAuth0();
+
+	return isAuthenticated ? (
 		<>
+			<Profile user={user} />
 			<Search />
+			<LogoutButton />
+		</>
+	) : (
+		<>
+			<LoginButton />
 		</>
 	);
 }
