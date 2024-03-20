@@ -1,5 +1,6 @@
 import { useState } from "react";
-import axios from "axios";
+
+import searchImages from "../service";
 
 const Search = () => {
 	const [searchTerm, setSearchTerm] = useState("");
@@ -7,16 +8,12 @@ const Search = () => {
 
 	const handleSearch = async () => {
 		try {
-			const response = await axios.post("http://localhost:3001/search-images", {
-				searchTerm,
-			});
-			if (response.data.success) {
-				setImages(response.data.images);
-			} else {
-				console.error("Error searching images:", response.data.error);
-			}
+			const response = await searchImages(searchTerm);
+
+			console.log(response);
+			setImages(response);
 		} catch (error) {
-			console.error("Error searching images:", error.message);
+			console.error("Error searching images:", error);
 		}
 	};
 

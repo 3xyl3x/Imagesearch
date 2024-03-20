@@ -13,6 +13,8 @@ function App() {
 			<Search />
 			<LogoutButton />
 		</>
+	) : isLoading ? (
+		<>Loading status</>
 	) : (
 		<>
 			<LoginButton />
