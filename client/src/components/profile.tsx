@@ -1,5 +1,3 @@
-import { useAuth0 } from "@auth0/auth0-react";
-
 interface ProfileProps {
 	user: any;
 }

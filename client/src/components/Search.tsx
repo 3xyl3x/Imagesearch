@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import searchImages from "../service";
+import Image from "./Image";
 
 const Search = () => {
 	const [searchTerm, setSearchTerm] = useState("");
@@ -28,17 +29,7 @@ const Search = () => {
 
 			<div>
 				{images.map((image, index) => (
-					<img
-						key={index}
-						src={image.link}
-						alt={image.title}
-						style={{
-							maxWidth: "300px",
-							maxHeight: "300px",
-							border: "2px solid black",
-							margin: "10px",
-						}}
-					/>
+					<Image key={index} url={image.link} />
 				))}
 			</div>
 		</div>

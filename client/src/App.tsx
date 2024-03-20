@@ -1,7 +1,7 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import LoginButton from "./components/LoginButton";
 import Search from "./components/Search";
-import Profile from "./components/profile";
+import Profile from "./components/Profile";
 import LogoutButton from "./components/LogoutButton";
 
 function App() {
