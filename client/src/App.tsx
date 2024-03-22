@@ -3,20 +3,60 @@ import LoginButton from "./components/LoginButton";
 import Search from "./components/Search";
 import Profile from "./components/Profile";
 import LogoutButton from "./components/LogoutButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Favorites from "./components/Favorites";
+import {
+	loadImagesFromServer,
+	removeImageFromServer,
+	saveImageToServer,
+} from "./service";
 
 function App() {
 	const { user, isAuthenticated, isLoading } = useAuth0();
 	const [savedImages, setSavedImages] = useState<string[]>([]);
 
-	const saveImage = (url: string) => {
-		if (savedImages.includes(url)) {
-			setSavedImages(savedImages.filter((imageUrl) => imageUrl !== url));
-		} else {
-			setSavedImages([...savedImages, url]);
+	const saveImage = (url: string): (() => void) => {
+		try {
+			if (savedImages.includes(url)) {
+				removeImageFromServer(user?.email ?? "", url)
+					.then((response) => {
+						if (response) {
+							setSavedImages(
+								savedImages.filter((imageUrl) => imageUrl !== url)
+							);
+						}
+					})
+					.catch((error) => console.error("Error:", error));
+			} else {
+				saveImageToServer(user?.email ?? "", url)
+					.then((response) => {
+						if (response) {
+							setSavedImages([...savedImages, url]);
+						}
+					})
+					.catch((error) => console.error("Error:", error));
+			}
+		} catch (error) {
+			console.error("Error:", error);
 		}
+		return () => {};
 	};
+
+	useEffect(() => {
+		const fetchImages = async () => {
+			try {
+				const images = await loadImagesFromServer(user?.email ?? "");
+				setSavedImages(images);
+			} catch (error) {
+				console.error("Error fetching images:", error);
+			}
+		};
+
+		if (isAuthenticated) {
+			fetchImages();
+		}
+	}, [isAuthenticated]);
+
 	return isAuthenticated ? (
 		<>
 			<div className="mx-auto mt-4 col-md-8 card text-center">

@@ -2,7 +2,7 @@ import Image from "./Image";
 
 interface favoriteProps {
 	savedImages: string[];
-	saveImage(): void;
+	saveImage(url: string): () => void;
 }
 
 const Favorites = (props: favoriteProps) => {
@@ -11,8 +11,11 @@ const Favorites = (props: favoriteProps) => {
 	return (
 		<div className="row">
 			{savedImages.map((image, index) => (
-				<div className="col-6 col-sm-3 col-md-12 col-lg-6 position-relative">
-					<Image key={index} url={image} saveImage={saveImage} saved={true} />
+				<div
+					key={index}
+					className="col-6 col-sm-3 col-md-12 col-lg-6 position-relative"
+				>
+					<Image url={image} saveImage={saveImage} saved={true} />
 				</div>
 			))}
 		</div>

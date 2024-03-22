@@ -1,7 +1,12 @@
 import { useState } from "react";
 
-import searchImages from "../service";
+import { searchImages } from "../service";
 import Image from "./Image";
+
+interface ImageType {
+	link: string;
+}
+
 interface SearchProps {
 	saveImage(url: string): () => void;
 	savedImages: string[];
@@ -11,7 +16,7 @@ const Search = (props: SearchProps) => {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [correctedSearchTerm, setCorrectedSearchTerm] = useState("");
 	const [searchDuration, setSearchDuration] = useState("");
-	const [images, setImages] = useState([]);
+	const [images, setImages] = useState<ImageType[]>([]);
 
 	const handleSearch = async (term: string) => {
 		setSearchDuration("");
@@ -20,11 +25,10 @@ const Search = (props: SearchProps) => {
 		try {
 			const response = await searchImages(term);
 
-			console.log(response);
 			if (response) {
 				setSearchDuration(response.data.searchInformation.formattedSearchTime);
 				setImages(response.data.items);
-				if (response.data.spelling.correctedQuery) {
+				if (response.data.spelling?.correctedQuery) {
 					setCorrectedSearchTerm(response.data.spelling.correctedQuery);
 				}
 			}
@@ -69,9 +73,11 @@ const Search = (props: SearchProps) => {
 
 			<div className="row">
 				{images.map((image, index) => (
-					<div className="col-6 col-sm-3 col-md-6 col-lg-4  position-relative">
+					<div
+						key={index}
+						className="col-6 col-sm-3 col-md-6 col-lg-4  position-relative"
+					>
 						<Image
-							key={index}
 							url={image.link}
 							saveImage={saveImage}
 							saved={savedImages.includes(image.link)}

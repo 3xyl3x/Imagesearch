@@ -1,8 +1,9 @@
 require("dotenv").config();
 const cors = require("cors");
 const express = require("express");
-const axios = require("axios");
-const { searchSchema } = require("./schemas/search.schema.js");
+const fs = require("fs").promises;
+const md5 = require("md5");
+const { saveImageSchema, removeImageSchema } = require("./schemas.js");
 
 const app = express();
 
@@ -10,41 +11,59 @@ app.use(cors());
 app.use(express.json());
 
 const port = process.env.PORT || 3001;
-const googleApiKey = process.env.GOOGLE_API_KEY || "GOOGLE-API-KEY";
-const googleCX = process.env.GOOGLE_CX || "GOOGLE-CX";
 
 app.get("/", async (req, res) => {
-	return res.json({ response: "server is running" });
+	return res.json({ response: "Server is running" });
 });
 
-app.post("/search-images", async (req, res) => {
-	const searchTerm = req.body.searchTerm;
-	console.log(`Searching for ${searchTerm}`);
-
-	// Validate the serachterm against the schema
-	const { error } = searchSchema.validate({ search: searchTerm });
-
-	// If validation fail, send error
-	if (error) {
-		return res
-			.status(400)
-			.json({ success: false, error: error.details[0].message });
-	}
-
-	// Try contacting google search with the searchterm
-	console.log(
-		`https://www.googleapis.com/customsearch/v1?q=${searchTerm}&key=${googleApiKey}&cx=${googleCX}&searchType=image`
-	);
+app.get("/images/:userEmail", async (req, res) => {
+	const { userEmail } = req.params;
+	const filePath = `savedImagesLists/${md5(userEmail)}.json`;
 	try {
-		const response = await axios.get(
-			`https://www.googleapis.com/customsearch/v1?q=${searchTerm}&key=${googleApiKey}&cx=${googleCX}&searchType=image`
-		);
-
-		const images = response.data.items;
-		res.status(200).json({ success: true, images });
+		const images = await fs.readFile(filePath, "utf8").then(JSON.parse);
+		return res.json(images);
 	} catch (error) {
-		console.error("Error searching images: ", error.message);
-		res.status(500).json({ success: false, error: "Internal Server Error" });
+		return res.json([]);
+	}
+});
+
+app.post("/images/:userEmail/save", async (req, res) => {
+	try {
+		const { userEmail } = req.params;
+		const { imageUrl } = req.body;
+		saveImageSchema.validate({ userEmail, imageUrl });
+
+		const filePath = `savedImagesLists/${md5(userEmail)}.json`;
+		let images = [];
+		try {
+			images = JSON.parse(await fs.readFile(filePath, "utf8"));
+		} catch (error) {}
+
+		images.push(imageUrl);
+		await fs.writeFile(filePath, JSON.stringify(images));
+		return res.json({ success: true, message: "Image saved successfully" });
+	} catch (error) {
+		return res.status(400).json({ success: false, error: error.message });
+	}
+});
+
+app.post("/images/:userEmail/remove", async (req, res) => {
+	try {
+		const { userEmail } = req.params;
+		const { imageUrl } = req.body;
+		removeImageSchema.validate({ userEmail, imageUrl });
+
+		const filePath = `savedImagesLists/${md5(userEmail)}.json`;
+		let images = [];
+		try {
+			images = JSON.parse(await fs.readFile(filePath, "utf8"));
+			images = images.filter((image) => image !== imageUrl);
+			await fs.writeFile(filePath, JSON.stringify(images));
+		} catch (error) {}
+
+		return res.json({ success: true, message: "Image removed successfully" });
+	} catch (error) {
+		return res.status(400).json({ success: false, error: error.message });
 	}
 });
 
