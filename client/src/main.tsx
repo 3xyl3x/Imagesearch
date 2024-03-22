@@ -2,6 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import { Auth0Provider } from "@auth0/auth0-react";
+import "bootstrap/dist/css/bootstrap.css";
+
 const Auth0Domain = import.meta.env.VITE_AUTH0_DOMAIN || "AUTH0-DOMAIN";
 const Auth0ClientId = import.meta.env.VITE_AUTH0_ID || "AUTH0-CLIENT-ID";
 ReactDOM.createRoot(document.getElementById("root")!).render(

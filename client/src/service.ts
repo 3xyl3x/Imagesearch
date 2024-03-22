@@ -9,8 +9,7 @@ const searchImages = async (searchTerm: string) => {
 			`https://www.googleapis.com/customsearch/v1?q=${searchTerm}&key=${googleApiKey}&cx=${googleCX}&searchType=image`
 		);
 
-		const images = response.data.items;
-		return images;
+		return response;
 	} catch (error) {
 		console.error("Error searching images");
 	}

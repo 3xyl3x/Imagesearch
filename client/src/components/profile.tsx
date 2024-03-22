@@ -4,11 +4,14 @@ interface ProfileProps {
 const Profile = (props: ProfileProps) => {
 	const { user } = props;
 	return (
-		<div>
-			<img src={user.picture} alt={user.name} />
-			<h2>{user.name}</h2>
-			<p>{user.email}</p>
-		</div>
+		<>
+			<img
+				className="rounded-circle border"
+				src={user.picture}
+				alt={user.name + user.email}
+				style={{ height: "40px" }}
+			/>
+		</>
 	);
 };
 
